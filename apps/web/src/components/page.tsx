@@ -17,7 +17,7 @@ export function Page({
 }) {
   return (
     <main className="rise mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+      <h1 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">{title}</h1>
       {lede ? (
         <p className="mt-2 max-w-2xl text-sm leading-6 text-mist sm:text-base">{lede}</p>
       ) : null}
@@ -52,7 +52,11 @@ export function QueryState({
     );
   }
   if (isPending) {
-    return <p className="text-sm text-mist">Loading…</p>;
+    return (
+      <p role="status" className="text-sm text-mist">
+        Loading…
+      </p>
+    );
   }
   return children;
 }

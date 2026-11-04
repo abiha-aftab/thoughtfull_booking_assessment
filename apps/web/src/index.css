@@ -2,6 +2,7 @@
 
 @theme inline {
   --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Newsreader', ui-serif, Georgia, serif;
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-card: var(--card);

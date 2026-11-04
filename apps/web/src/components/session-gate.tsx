@@ -16,8 +16,8 @@ function SessionStatus({
       <div className="mb-8 flex justify-end">
         <ThemeToggle />
       </div>
-      <p className="text-lg font-semibold tracking-tight text-pine">ThoughtFull</p>
-      <h1 className="mt-3 text-xl font-semibold">{title}</h1>
+      <p className="font-display text-xl font-semibold tracking-tight text-pine">ThoughtFull</p>
+      <h1 className="mt-3 font-display text-2xl font-medium">{title}</h1>
       {action && onAction ? (
         <button
           type="button"

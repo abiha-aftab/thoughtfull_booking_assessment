@@ -93,7 +93,7 @@ export function AppShell() {
             <span className="flex size-8 items-center justify-center rounded-lg bg-pine text-sm font-semibold text-paper">
               T
             </span>
-            <span className="text-[15px] font-semibold tracking-tight">ThoughtFull</span>
+            <span className="font-display text-lg font-semibold tracking-tight">ThoughtFull</span>
           </Link>
           <nav
             className="flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-xl bg-chip p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
