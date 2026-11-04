@@ -38,12 +38,21 @@ export async function deliverDueReminders(now = new Date()): Promise<number> {
     },
   );
 
+  // A reminder that is still pending once its session has started would announce a start
+  // that is already in the past, which happens when the API was down at its fire time.
+  await SessionModel.updateMany(
+    { status: 'booked', startAt: { $lte: now }, 'reminders.status': 'pending' },
+    { $set: { 'reminders.$[reminder].status': 'cancelled' } },
+    { arrayFilters: [{ 'reminder.status': 'pending' }] },
+  );
+
   let delivered = 0;
   for (let count = 0; count < 500; count += 1) {
     const token = randomUUID();
     const session = await SessionModel.findOneAndUpdate(
       {
         status: 'booked',
+        startAt: { $gt: now },
         reminders: { $elemMatch: { status: 'pending', fireAt: { $lte: now } } },
       },
       {

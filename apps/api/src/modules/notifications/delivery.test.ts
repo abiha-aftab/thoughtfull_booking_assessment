@@ -119,6 +119,40 @@ describe('reminder delivery', () => {
     ).toBe(true);
   });
 
+  it('drops reminders that are still pending once the session has started', async () => {
+    const ids = await book();
+    const afterStart = new Date(start.getTime() + 60_000);
+
+    expect(await deliverDueReminders(afterStart)).toBe(0);
+    expect(await NotificationModel.countDocuments()).toBe(0);
+    const session = await SessionModel.findById(ids.sessionId);
+    expect(session?.reminders.map((reminder) => reminder.status)).toEqual([
+      'cancelled',
+      'cancelled',
+      'cancelled',
+      'cancelled',
+    ]);
+  });
+
+  it('keeps delivered reminders when the rest of the plan goes stale', async () => {
+    const ids = await book();
+    const dayBefore = new Date(start.getTime() - 24 * hour);
+    expect(await deliverDueReminders(dayBefore)).toBe(2);
+
+    expect(await deliverDueReminders(new Date(start.getTime() + 60_000))).toBe(0);
+    const session = await SessionModel.findById(ids.sessionId);
+    const byKind = new Map(
+      (session?.reminders ?? []).map((reminder) => [
+        `${reminder.kind}:${reminder.userId.toString()}`,
+        reminder.status,
+      ]),
+    );
+    expect(byKind.get(`24h:${ids.memberId}`)).toBe('delivered');
+    expect(byKind.get(`24h:${ids.professionalId}`)).toBe('delivered');
+    expect(byKind.get(`1h:${ids.memberId}`)).toBe('cancelled');
+    expect(byKind.get(`1h:${ids.professionalId}`)).toBe('cancelled');
+  });
+
   it('does not deliver reminders for a cancelled session and keeps notifications private', async () => {
     const ids = await book();
     await cancelSession({ actorId: ids.memberId, sessionId: ids.sessionId, now: now30 });
