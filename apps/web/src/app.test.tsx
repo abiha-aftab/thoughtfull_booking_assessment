@@ -107,16 +107,19 @@ describe('auth screens', () => {
 
     fetchMock.mockImplementation((input) => {
       const url = requestUrl(input);
-      if (url.endsWith('/api/auth/login')) {
-        return Promise.resolve(json({ user: member }));
+      if (url.includes('/api/professionals')) {
+        return Promise.resolve(json({ professionals: [], page: 1, pageSize: 20, total: 0 }));
+      }
+      if (url.includes('/api/notifications')) {
+        return Promise.resolve(json({ notifications: [] }));
       }
       return Promise.resolve(json({ user: member }));
     });
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
-    expect(await screen.findByRole('heading', { name: 'Hello, Maya' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Professionals' })).toBeInTheDocument();
     expect(screen.getByText(/Member · America\/New_York/)).toBeInTheDocument();
-    expect(screen.getByText('maya@example.com')).toBeInTheDocument();
+    expect(await screen.findByText('No professionals yet.')).toBeInTheDocument();
   });
 
   it('asks a professional for a title and does not send one for a member', async () => {

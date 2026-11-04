@@ -2,7 +2,7 @@
 
 Small booking product for the ThoughtFull engineering assessment. A member finds a professional, sees free 50-minute slots in the member's own timezone, and books a session. Both people receive in-app reminders.
 
-This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, booking, and in-app reminders through Mongoose. The web app signs people in and shows the signed-in account. Booking screens are not built yet.
+This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, booking, and in-app reminders through Mongoose. The web app signs people in, then lets a member book a session and a professional publish hours.
 
 ## Stack
 
