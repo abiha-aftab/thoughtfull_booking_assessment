@@ -4,6 +4,80 @@ Small booking product for the ThoughtFull engineering assessment. A member finds
 
 This repository is a TypeScript monorepo. The API stores accounts, availability, sessions, reminders, and notifications with Mongoose. The web app signs people in, then lets a member book a session and a professional publish hours.
 
+## Architecture
+
+The browser never sees the session token. It calls the API with an httpOnly cookie. Both apps share booking constants and response types from `packages/shared`. Reminders live on the session document. A poller in the API process writes each one to `Notification` once.
+
+```mermaid
+flowchart TB
+  web["React app"]
+  shared["Shared constants and types"]
+
+  subgraph api ["Express API"]
+    auth["Auth"]
+    availability["Availability"]
+    professionals["Professionals"]
+    sessions["Sessions"]
+    notifications["Notifications"]
+    poller["Reminder poller"]
+  end
+
+  subgraph mongo ["MongoDB through Mongoose"]
+    users[("User")]
+    authSessions[("AuthSession")]
+    hours[("Availability")]
+    sessionDocs[("Session, reminders embedded")]
+    notes[("Notification")]
+    locks[("BookingLock")]
+  end
+
+  web -->|"credentials include"| auth
+  web --> availability
+  web --> professionals
+  web --> sessions
+  web --> notifications
+  web --> shared
+  api --> shared
+  auth --> users
+  auth --> authSessions
+  availability --> hours
+  professionals --> users
+  professionals --> hours
+  professionals --> sessionDocs
+  sessions --> sessionDocs
+  sessions --> locks
+  sessions --> users
+  notifications --> notes
+  poller --> sessionDocs
+  poller --> notes
+```
+
+## Booking flow
+
+Slots are generated on the server from the professional's weekly hours. A start is offered only when it is inside the next 28 days, at least 2 hours away, on an unblocked local date, and not already booked. The member sees that instant in their own timezone.
+
+```mermaid
+flowchart TD
+  signIn["Sign in"] --> role{"Role"}
+  role -->|"Member"| list["Browse professionals"]
+  role -->|"Professional"| hoursEditor["Set weekly hours and blocked dates"]
+  list --> profile["Open a profile and the 4-week calendar"]
+  profile --> confirm["Confirm the chosen time"]
+  confirm --> accepted{"Server accepts the start?"}
+  accepted -->|"Slot taken or member overlap"| confirm
+  accepted -->|"Booked"| saved["Session saved and future reminders planned"]
+  saved --> gone["That slot is no longer offered"]
+  saved --> deliver["Poller delivers each reminder once"]
+  saved --> memberPage["Member opens the session"]
+  memberPage --> window{"At least 24 elapsed hours remain?"}
+  window -->|"Yes"| change["Cancel, or reschedule the same session"]
+  window -->|"No"| refused["Controls stay disabled and the refusal is shown"]
+  change --> saved
+  hoursEditor --> schedule["Upcoming schedule, including the member name"]
+  saved --> schedule
+  schedule --> proCancel["Professional can cancel a booked session at any time"]
+```
+
 ## Stack
 
 - React, Vite, TypeScript, React Router, Tailwind CSS, TanStack Query, React Hook Form, and Zod
