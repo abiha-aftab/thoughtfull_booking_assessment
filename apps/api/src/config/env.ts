@@ -6,7 +6,7 @@ import { z } from 'zod';
 const configDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(configDir, '../../../..');
 
-dotenv.config({ path: path.join(repoRoot, '.env') });
+dotenv.config({ path: path.join(repoRoot, '.env'), quiet: true });
 
 const mongoUri = z
   .string()

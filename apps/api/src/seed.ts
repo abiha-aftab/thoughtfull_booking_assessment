@@ -34,7 +34,7 @@ const professional = {
 };
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-dotenv.config({ path: path.join(root, '.env') });
+dotenv.config({ path: path.join(root, '.env'), quiet: true });
 
 const HOUR_MS = 60 * 60 * 1000;
 const DURATION_MS = SESSION_DURATION_MINUTES * 60 * 1000;
