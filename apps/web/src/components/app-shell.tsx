@@ -88,15 +88,17 @@ export function AppShell() {
   return (
     <div className="min-h-svh">
       <header className="sticky top-0 z-20 border-b border-hairline bg-paper/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-5xl items-center gap-2 px-3 lg:gap-6 lg:px-6">
-          <Link to="/" className="flex shrink-0 items-center gap-2">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-3 py-2 sm:h-16 sm:flex-nowrap sm:py-0 lg:gap-6 lg:px-6">
+          <Link to="/" aria-label="ThoughtFull" className="flex shrink-0 items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-lg bg-pine text-sm font-semibold text-paper">
               T
             </span>
-            <span className="font-display text-lg font-semibold tracking-tight">ThoughtFull</span>
+            <span className="hidden font-display text-lg font-semibold tracking-tight sm:inline">
+              ThoughtFull
+            </span>
           </Link>
           <nav
-            className="flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-xl bg-chip p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="order-last flex w-full min-w-0 items-center gap-0.5 overflow-x-auto rounded-xl bg-chip p-1 sm:order-none sm:w-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             aria-label="Sections"
           >
             {user.role === 'member' ? (
