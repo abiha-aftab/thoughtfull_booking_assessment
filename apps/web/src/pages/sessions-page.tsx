@@ -2,7 +2,13 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useCurrentUser } from '../auth/session';
 import { useSessions } from '../booking/queries';
 import { formatWhen, sessionTiming } from '../booking/time';
-import { EmptyNote, Page, QueryState, secondaryButtonClass } from '../components/page';
+import {
+  EmptyNote,
+  Page,
+  QueryState,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from '../components/page';
 
 export function SessionsPage() {
   const [params] = useSearchParams();
@@ -19,16 +25,14 @@ export function SessionsPage() {
       <div className="mb-6 flex gap-2" role="group" aria-label="Session lists">
         <Link
           to="/sessions"
-          className={
-            when === 'upcoming' ? secondaryButtonClass + ' border-pine' : secondaryButtonClass
-          }
+          className={when === 'upcoming' ? primaryButtonClass : secondaryButtonClass}
           aria-current={when === 'upcoming' ? 'page' : undefined}
         >
           Upcoming
         </Link>
         <Link
           to="/sessions?when=past"
-          className={when === 'past' ? secondaryButtonClass + ' border-pine' : secondaryButtonClass}
+          className={when === 'past' ? primaryButtonClass : secondaryButtonClass}
           aria-current={when === 'past' ? 'page' : undefined}
         >
           Past
@@ -53,14 +57,18 @@ export function SessionsPage() {
                 <li key={item.id}>
                   <Link
                     to={`/sessions/${item.id}`}
-                    className="block rounded-3xl border border-line bg-card p-5"
+                    className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-card px-4 py-3 hover:border-pine"
                   >
-                    <h2 className="font-serif text-2xl">{item.professionalName}</h2>
-                    <p className="mt-1">{formatWhen(item.startAt, user.timezone)}</p>
-                    <p className="mt-1 text-sm text-mist">
-                      {item.status === 'cancelled'
-                        ? 'Cancelled'
-                        : sessionTiming(item.startAt, item.endAt)}
+                    <span>
+                      <h2 className="font-semibold">{item.professionalName}</h2>
+                      <p className="mt-1 text-sm text-mist">
+                        {item.status === 'cancelled'
+                          ? 'Cancelled'
+                          : sessionTiming(item.startAt, item.endAt)}
+                      </p>
+                    </span>
+                    <p className="text-right text-sm font-medium">
+                      {formatWhen(item.startAt, user.timezone)}
                     </p>
                   </Link>
                 </li>

@@ -58,15 +58,17 @@ export function SessionPage() {
                 {user.role === 'member' ? 'Your sessions' : 'Upcoming sessions'}
               </Link>
             </p>
-            <p className="text-lg">{formatWhen(session.startAt, user.timezone)}</p>
-            <p className="text-sm text-mist">
-              {session.status === 'cancelled'
-                ? 'Cancelled'
-                : sessionTiming(session.startAt, session.endAt)}
-            </p>
-            {booked && user.role === 'member' && !allowed ? (
-              <p>{CANCELLATION_WINDOW_MESSAGE}</p>
-            ) : null}
+            <div className="space-y-2 rounded-2xl border border-line bg-card p-5">
+              <p className="text-lg font-semibold">{formatWhen(session.startAt, user.timezone)}</p>
+              <p className="text-sm text-mist">
+                {session.status === 'cancelled'
+                  ? 'Cancelled'
+                  : sessionTiming(session.startAt, session.endAt)}
+              </p>
+              {booked && user.role === 'member' && !allowed ? (
+                <p className="text-sm">{CANCELLATION_WINDOW_MESSAGE}</p>
+              ) : null}
+            </div>
             <FormError message={failed ? errorMessage(failed) : null} />
             {booked && user.role === 'member' ? (
               <div className="flex flex-wrap gap-3">
@@ -104,7 +106,7 @@ export function SessionPage() {
               </button>
             ) : null}
             {confirming && booked ? (
-              <div className="space-y-3 rounded-3xl border border-line bg-card p-5">
+              <div className="space-y-3 rounded-2xl border border-line bg-pine-soft p-4">
                 <p>Cancel this session? Pending reminders are dropped.</p>
                 <div className="flex flex-wrap gap-3">
                   <button

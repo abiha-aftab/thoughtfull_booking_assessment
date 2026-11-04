@@ -328,7 +328,6 @@ describe('booking screens', () => {
     const directory = renderAt('/');
     expect(await screen.findByText('No professionals yet.')).toBeInTheDocument();
     await user.type(screen.getByLabelText('Search by name'), 'Nobody');
-    await user.click(screen.getByRole('button', { name: 'Search' }));
     await waitFor(() => {
       expect(
         fetchMock.mock.calls.some((call) => requestUrl(call[0]).includes('search=Nobody')),

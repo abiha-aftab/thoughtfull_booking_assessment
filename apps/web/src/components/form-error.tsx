@@ -29,7 +29,7 @@ export function FormError({ message }: { message: string | null }) {
     return null;
   }
   return (
-    <p role="alert" className="rounded-lg bg-[#f8ebe7] px-3 py-2 text-sm text-clay">
+    <p role="alert" className="rounded-xl bg-clay-soft px-3 py-2 text-sm text-clay">
       {message}
     </p>
   );

@@ -1,10 +1,78 @@
+import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { roleLabel, timezoneLabel } from '../auth/paths';
+import { roleLabel, timezoneAbbreviation, timezoneLabel } from '../auth/paths';
 import { useCurrentUser, useLogout } from '../auth/session';
 import { useNotifications } from '../booking/queries';
+import { ThemeToggle } from './theme-toggle';
 
 function navClass({ isActive }: { isActive: boolean }): string {
-  return isActive ? 'font-semibold text-pine' : 'text-mist';
+  return isActive
+    ? 'inline-flex items-center gap-1.5 rounded-lg bg-pine px-2 py-1.5 text-sm font-semibold text-paper shadow-[0_4px_14px_rgb(61_207_155_/_0.28)] lg:px-3'
+    : 'inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-mist hover:bg-chip-strong hover:text-ink lg:px-3';
+}
+
+function ZoneClock({ timeZone }: { timeZone: string }) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, []);
+  const time = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(now);
+  const zone = timezoneAbbreviation(timeZone, now) ?? timeZone;
+  return (
+    <span className="block whitespace-nowrap text-[11px] leading-4 font-medium text-ink tabular-nums">
+      {time} ({zone})
+    </span>
+  );
+}
+
+function initials(name: string): string {
+  const letters = name
+    .split(/\s+/)
+    .filter((part) => part.length > 0)
+    .slice(0, 2)
+    .map((part) => part[0] ?? '')
+    .join('');
+  return letters.toUpperCase();
+}
+
+function SectionLink({
+  to,
+  end = false,
+  label,
+  count = 0,
+}: {
+  to: string;
+  end?: boolean;
+  label: string;
+  count?: number;
+}) {
+  return (
+    <NavLink to={to} end={end} className={navClass}>
+      {({ isActive }) => (
+        <>
+          {label}
+          {count > 0 ? (
+            <span
+              className={`inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold ${
+                isActive ? 'bg-paper text-pine' : 'bg-pine text-paper'
+              }`}
+            >
+              {count}
+            </span>
+          ) : null}
+        </>
+      )}
+    </NavLink>
+  );
 }
 
 export function AppShell() {
@@ -19,54 +87,62 @@ export function AppShell() {
 
   return (
     <div className="min-h-svh">
-      <header className="border-b border-line bg-card">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
-          <Link to="/" className="font-serif text-3xl text-pine-dark">
-            ThoughtFull
+      <header className="sticky top-0 z-20 border-b border-hairline bg-paper/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-5xl items-center gap-2 px-3 lg:gap-6 lg:px-6">
+          <Link to="/" className="flex shrink-0 items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-pine text-sm font-semibold text-paper">
+              T
+            </span>
+            <span className="text-[15px] font-semibold tracking-tight">ThoughtFull</span>
           </Link>
-          <nav className="flex flex-wrap gap-4 text-sm" aria-label="Sections">
+          <nav
+            className="flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-xl bg-chip p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            aria-label="Sections"
+          >
             {user.role === 'member' ? (
               <>
-                <NavLink to="/" end className={navClass}>
-                  Professionals
-                </NavLink>
-                <NavLink to="/sessions" className={navClass}>
-                  Sessions
-                </NavLink>
+                <SectionLink to="/" end label="Professionals" />
+                <SectionLink to="/sessions" label="Sessions" />
               </>
             ) : (
               <>
-                <NavLink to="/" end className={navClass}>
-                  Schedule
-                </NavLink>
-                <NavLink to="/availability" className={navClass}>
-                  Hours
-                </NavLink>
+                <SectionLink to="/" end label="Schedule" />
+                <SectionLink to="/availability" label="Hours" />
               </>
             )}
-            <NavLink to="/notifications" className={navClass}>
-              Notifications
-              {unread > 0 ? (
-                <span className="ml-2 rounded-full bg-pine px-2 text-card">{unread}</span>
-              ) : null}
-            </NavLink>
+            <SectionLink to="/notifications" label="Notifications" count={unread} />
           </nav>
-          <div className="ml-auto text-sm">
-            <p className="font-semibold">{user.name}</p>
-            <p className="text-mist">
-              {roleLabel(user.role)} · {timezoneLabel(user.timezone)}
-            </p>
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
+            <span aria-hidden="true" className="h-5 w-px bg-line" />
+            <div
+              className="flex items-center gap-2"
+              title={`${user.name} · ${roleLabel(user.role)} · ${timezoneLabel(user.timezone)}`}
+            >
+              <span className="flex size-8 items-center justify-center rounded-full bg-pine-soft text-xs font-semibold text-pine ring-1 ring-pine/30">
+                {initials(user.name)}
+              </span>
+              <span className="min-w-0">
+                <span className="block max-w-36 truncate text-sm font-semibold leading-4">
+                  {user.name}
+                </span>
+                <span className="block text-[11px] leading-4 text-mist">
+                  {roleLabel(user.role)}
+                </span>
+                <ZoneClock timeZone={user.timezone} />
+              </span>
+            </div>
+            <button
+              type="button"
+              className="shrink-0 rounded-lg px-2 py-1.5 text-sm font-medium text-mist hover:bg-clay-soft hover:text-clay disabled:opacity-60"
+              onClick={() => {
+                logout.mutate();
+              }}
+              disabled={logout.isPending}
+            >
+              {logout.isPending ? 'Signing out…' : 'Log out'}
+            </button>
           </div>
-          <button
-            type="button"
-            className="rounded-full border border-line px-4 py-2 text-sm"
-            onClick={() => {
-              logout.mutate();
-            }}
-            disabled={logout.isPending}
-          >
-            {logout.isPending ? 'Signing out…' : 'Log out'}
-          </button>
         </div>
         {logout.isError ? (
           <p role="alert" className="px-6 pb-3 text-sm text-clay">

@@ -9,16 +9,20 @@ export function roleLabel(role: 'member' | 'professional'): string {
   return role === 'member' ? 'Member' : 'Professional';
 }
 
-export function timezoneLabel(timeZone: string, now = new Date()): string {
+export function timezoneAbbreviation(timeZone: string, now = new Date()): string | undefined {
   try {
-    const abbreviation = new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('en-US', {
       timeZone,
       timeZoneName: 'short',
     })
       .formatToParts(now)
       .find((part) => part.type === 'timeZoneName')?.value;
-    return abbreviation ? `${timeZone} (${abbreviation})` : timeZone;
   } catch {
-    return timeZone;
+    return undefined;
   }
+}
+
+export function timezoneLabel(timeZone: string, now = new Date()): string {
+  const abbreviation = timezoneAbbreviation(timeZone, now);
+  return abbreviation ? `${timeZone} (${abbreviation})` : timeZone;
 }

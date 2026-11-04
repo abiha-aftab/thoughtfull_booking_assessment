@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { browserTimezone, registerFormSchema, type RegisterFormValues } from '../auth/schemas';
 import { useRegister } from '../auth/session';
 import { AuthLayout } from '../components/auth-layout';
 import { FormError, applyServerIssues, errorMessage } from '../components/form-error';
 import { TextAreaField, TextField } from '../components/text-field';
+import { TimezoneField } from '../components/timezone-field';
 
 const timezones = [...new Set(['UTC', ...Intl.supportedValuesOf('timeZone')])].sort((left, right) =>
   left.localeCompare(right),
@@ -53,16 +54,35 @@ export function RegisterPage() {
         noValidate
       >
         <FormError message={registerAccount.isError ? errorMessage(registerAccount.error) : null} />
-        <fieldset className="space-y-2">
+        <fieldset>
           <legend className="text-sm font-semibold">I am a</legend>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="radio" value="member" {...form.register('role')} />
-            Member
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="radio" value="professional" {...form.register('role')} />
-            Professional
-          </label>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <label
+              className={
+                role === 'member'
+                  ? 'cursor-pointer rounded-xl bg-pine px-3 py-2 text-center text-sm font-semibold text-paper'
+                  : 'field cursor-pointer rounded-xl px-3 py-2 text-center text-sm font-medium'
+              }
+            >
+              <input className="sr-only" type="radio" value="member" {...form.register('role')} />
+              Member
+            </label>
+            <label
+              className={
+                role === 'professional'
+                  ? 'cursor-pointer rounded-xl bg-pine px-3 py-2 text-center text-sm font-semibold text-paper'
+                  : 'field cursor-pointer rounded-xl px-3 py-2 text-center text-sm font-medium'
+              }
+            >
+              <input
+                className="sr-only"
+                type="radio"
+                value="professional"
+                {...form.register('role')}
+              />
+              Professional
+            </label>
+          </div>
         </fieldset>
         <TextField
           label="Name"
@@ -84,18 +104,19 @@ export function RegisterPage() {
           error={form.formState.errors.password?.message}
           {...form.register('password')}
         />
-        <TextField
-          label="Timezone"
-          list="timezones"
-          autoComplete="off"
-          error={form.formState.errors.timezone?.message}
-          {...form.register('timezone')}
+        <Controller
+          name="timezone"
+          control={form.control}
+          render={({ field }) => (
+            <TimezoneField
+              value={field.value}
+              options={timezones}
+              error={form.formState.errors.timezone?.message}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <datalist id="timezones">
-          {timezones.map((zone) => (
-            <option key={zone} value={zone} />
-          ))}
-        </datalist>
         {role === 'professional' ? (
           <>
             <TextField
@@ -112,7 +133,7 @@ export function RegisterPage() {
         ) : null}
         <button
           type="submit"
-          className="w-full rounded-full bg-pine px-4 py-3 text-card disabled:opacity-60"
+          className="w-full rounded-xl bg-pine px-4 py-2.5 text-sm font-semibold text-paper shadow-[0_8px_24px_rgb(61_207_155_/_0.2)] hover:bg-pine-dark disabled:opacity-60"
           disabled={registerAccount.isPending}
         >
           {registerAccount.isPending ? 'Creating account…' : 'Create account'}
@@ -120,7 +141,7 @@ export function RegisterPage() {
       </form>
       <p className="mt-6 text-sm text-mist">
         Already registered?{' '}
-        <Link to="/login" className="font-semibold text-pine-dark">
+        <Link to="/login" className="font-semibold text-pine">
           Sign in
         </Link>
       </p>

@@ -55,7 +55,7 @@ export function LoginPage() {
         />
         <button
           type="submit"
-          className="w-full rounded-full bg-pine px-4 py-3 text-card disabled:opacity-60"
+          className="w-full rounded-xl bg-pine px-4 py-2.5 text-sm font-semibold text-paper shadow-[0_8px_24px_rgb(61_207_155_/_0.2)] hover:bg-pine-dark disabled:opacity-60"
           disabled={login.isPending}
         >
           {login.isPending ? 'Signing in…' : 'Sign in'}
@@ -63,7 +63,7 @@ export function LoginPage() {
       </form>
       <p className="mt-6 text-sm text-mist">
         New here?{' '}
-        <Link to="/register" className="font-semibold text-pine-dark">
+        <Link to="/register" className="font-semibold text-pine">
           Create an account
         </Link>
       </p>

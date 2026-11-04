@@ -118,7 +118,9 @@ describe('auth screens', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('heading', { name: 'Professionals' })).toBeInTheDocument();
-    expect(screen.getByText(/Member · America\/New_York/)).toBeInTheDocument();
+    expect(screen.getByText('Maya Chen')).toBeInTheDocument();
+    expect(screen.getByText('Member')).toBeInTheDocument();
+    expect(screen.getByText(/\d{1,2}:\d{2}\s*[AP]M \(EST\)/)).toBeInTheDocument();
     expect(await screen.findByText('No professionals yet.')).toBeInTheDocument();
   });
 

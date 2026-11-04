@@ -60,16 +60,19 @@ export function AvailabilityPage() {
         }}
       >
         {availability ? (
-          <div className="grid gap-10">
-            <section className="space-y-4">
+          <div className="grid gap-8">
+            <section className="space-y-3">
               {WEEKDAYS.map((weekday) => {
                 const rows = intervals
                   .map((interval, index) => ({ interval, index }))
                   .filter((row) => row.interval.dayOfWeek === weekday.day);
                 return (
-                  <div key={weekday.day} className="rounded-3xl border border-line bg-card p-5">
+                  <div
+                    key={weekday.day}
+                    className="rounded-2xl border border-line bg-card px-4 py-3"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                      <h2 className="font-serif text-2xl">{weekday.name}</h2>
+                      <h2 className="text-base font-semibold">{weekday.name}</h2>
                       <button
                         type="button"
                         className={secondaryButtonClass}
@@ -97,7 +100,7 @@ export function AvailabilityPage() {
                               aria-label={`Start time, ${weekday.name} ${String(row.index + 1)}`}
                               aria-invalid={invalid || undefined}
                               type="time"
-                              className="rounded-lg border border-line bg-card px-3 py-2"
+                              className="field rounded-xl px-3 py-2"
                               value={row.interval.startTime}
                               onChange={(event) => {
                                 const next = intervals.map((interval, index) =>
@@ -113,7 +116,7 @@ export function AvailabilityPage() {
                               aria-label={`End time, ${weekday.name} ${String(row.index + 1)}`}
                               aria-invalid={invalid || undefined}
                               type="time"
-                              className="rounded-lg border border-line bg-card px-3 py-2"
+                              className="field rounded-xl px-3 py-2"
                               value={row.interval.endTime}
                               onChange={(event) => {
                                 const next = intervals.map((interval, index) =>
@@ -142,7 +145,7 @@ export function AvailabilityPage() {
                 );
               })}
               {hourErrors.length > 0 ? (
-                <div role="alert" className="rounded-lg bg-[#f8ebe7] px-3 py-2 text-sm text-clay">
+                <div role="alert" className="rounded-xl bg-clay-soft px-3 py-2 text-sm text-clay">
                   {hourErrors.map((message) => (
                     <p key={message}>{message}</p>
                   ))}
@@ -178,8 +181,8 @@ export function AvailabilityPage() {
               </button>
             </section>
             <section className="space-y-4">
-              <h2 className="font-serif text-2xl">Blocked dates</h2>
-              <p className="text-mist">
+              <h2 className="text-lg font-semibold">Blocked dates</h2>
+              <p className="text-sm text-mist">
                 A blocked date removes every opening that starts on that local day.
               </p>
               <form
@@ -215,7 +218,7 @@ export function AvailabilityPage() {
                     name="date"
                     type="date"
                     required
-                    className="mt-1 block rounded-lg border border-line bg-card px-3 py-2"
+                    className="field mt-1 block rounded-xl px-3 py-2"
                   />
                 </label>
                 <button type="submit" className={secondaryButtonClass} disabled={block.isPending}>

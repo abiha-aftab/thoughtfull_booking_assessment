@@ -56,8 +56,8 @@ export function NotificationsPage() {
                 key={item.id}
                 className={
                   item.readAt
-                    ? 'rounded-3xl border border-line bg-card p-5'
-                    : 'rounded-3xl border border-pine bg-card p-5'
+                    ? 'rounded-2xl border border-line bg-card p-4'
+                    : 'rounded-2xl border border-pine bg-pine-soft p-4'
                 }
               >
                 <p>{item.message}</p>

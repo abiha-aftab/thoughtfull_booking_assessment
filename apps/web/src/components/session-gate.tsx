@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useCurrentUser } from '../auth/session';
+import { ThemeToggle } from './theme-toggle';
 
 function SessionStatus({
   title,
@@ -12,12 +13,15 @@ function SessionStatus({
 }) {
   return (
     <main className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-6">
-      <p className="font-serif text-3xl">ThoughtFull</p>
-      <h1 className="mt-4 text-xl">{title}</h1>
+      <div className="mb-8 flex justify-end">
+        <ThemeToggle />
+      </div>
+      <p className="text-lg font-semibold tracking-tight text-pine">ThoughtFull</p>
+      <h1 className="mt-3 text-xl font-semibold">{title}</h1>
       {action && onAction ? (
         <button
           type="button"
-          className="mt-6 w-fit rounded-full bg-pine px-4 py-2 text-card"
+          className="mt-6 w-fit rounded-xl bg-pine px-4 py-2 text-sm font-semibold text-paper"
           onClick={onAction}
         >
           {action}

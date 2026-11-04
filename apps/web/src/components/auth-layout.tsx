@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ThemeToggle } from './theme-toggle';
 
 export function AuthLayout({
   title,
@@ -10,15 +11,18 @@ export function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="mx-auto grid min-h-svh max-w-5xl items-center gap-12 px-6 py-16 md:grid-cols-[1.1fr_0.9fr]">
-      <section>
-        <p className="font-serif text-4xl text-pine-dark">ThoughtFull</p>
-        <h1 className="mt-6 font-serif text-5xl leading-tight">{title}</h1>
-        <p className="mt-4 max-w-md text-lg text-mist">{lede}</p>
-      </section>
-      <section className="rounded-3xl border border-line bg-card p-8 shadow-[0_20px_50px_rgb(28_38_34_/_0.06)]">
-        {children}
-      </section>
+    <main className="flex min-h-svh flex-col px-4 py-10">
+      <div className="flex justify-end">
+        <ThemeToggle />
+      </div>
+      <div className="m-auto w-full max-w-md">
+        <p className="text-center text-lg font-semibold tracking-tight text-pine">ThoughtFull</p>
+        <section className="rise mt-5 rounded-2xl border border-hairline bg-card/80 p-6 shadow-[0_24px_80px_rgb(0_0_0_/_0.28)] backdrop-blur sm:p-8">
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          <p className="mt-2 text-sm leading-6 text-mist">{lede}</p>
+          <div className="mt-6">{children}</div>
+        </section>
+      </div>
     </main>
   );
 }

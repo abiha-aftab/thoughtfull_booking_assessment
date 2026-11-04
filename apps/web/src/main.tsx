@@ -5,8 +5,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './app';
 import './index.css';
 import '@fontsource/figtree/400.css';
+import '@fontsource/figtree/500.css';
 import '@fontsource/figtree/600.css';
-import '@fontsource/newsreader/500.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {

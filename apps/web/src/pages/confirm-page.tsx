@@ -48,11 +48,13 @@ export function ConfirmPage() {
         }}
       >
         {profile && user ? (
-          <div className="max-w-xl space-y-4 rounded-3xl border border-line bg-card p-6">
-            <h2 className="font-serif text-3xl">{profile.name}</h2>
-            <p className="text-pine">{profile.title}</p>
+          <div className="max-w-xl space-y-4 rounded-2xl border border-line bg-card p-5 sm:p-6">
+            <h2 className="text-xl font-semibold">{profile.name}</h2>
+            <p className="text-sm font-medium text-pine">{profile.title}</p>
             {match ? (
-              <p>{formatWhen(match.startAt, user.timezone)}</p>
+              <p className="rounded-xl bg-pine-soft px-3 py-2 text-sm font-medium text-pine">
+                {formatWhen(match.startAt, user.timezone)}
+              </p>
             ) : (
               <FormError message="That time is not available" />
             )}

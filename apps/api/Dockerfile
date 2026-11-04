@@ -15,4 +15,5 @@ COPY packages/shared packages/shared
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start", "-w", "@thoughtfull/api"]
+# Inserts demo accounts only when they are missing, then starts the API.
+CMD ["sh", "-c", "npm run seed -w @thoughtfull/api && npm run start -w @thoughtfull/api"]

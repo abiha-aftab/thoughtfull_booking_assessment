@@ -14,20 +14,21 @@ async function signIn(page: Page, email: string): Promise<void> {
 test('a member books an open slot and the professional sees that session', async ({ page }) => {
   await signIn(page, memberEmail);
   await expect(page.getByRole('heading', { name: 'Professionals' })).toBeVisible();
-  await expect(page.getByText(/Member · America\/New_York/)).toBeVisible();
+  await expect(page.getByText('Maya Chen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Member', { exact: true })).toBeVisible();
+  await expect(page.getByText(/\d{1,2}:\d{2}\s*[AP]M \(EST\)/)).toBeVisible();
 
   await page.getByLabel('Search by name').fill('Priya');
-  await page.getByRole('button', { name: 'Search' }).click();
   await page.getByRole('link', { name: /Priya Shah/ }).click();
   await expect(page.getByRole('heading', { name: 'Priya Shah' })).toBeVisible();
 
   const times = page.getByRole('group', { name: 'Times' });
   await expect(times.getByRole('button').first()).toBeVisible();
   const dayLabel = (
-    await page
+    (await page
       .getByRole('group', { name: 'Dates' })
       .getByRole('button', { pressed: true })
-      .innerText()
+      .getAttribute('aria-label')) ?? ''
   ).trim();
   const timeButton = times.getByRole('button').first();
   const timeLabel = (await timeButton.innerText()).trim();
@@ -42,7 +43,6 @@ test('a member books an open slot and the professional sees that session', async
 
   await page.goto('/');
   await page.getByLabel('Search by name').fill('Priya');
-  await page.getByRole('button', { name: 'Search' }).click();
   await page.getByRole('link', { name: /Priya Shah/ }).click();
   const day = page.getByRole('button', { name: dayLabel, exact: true });
   if (await day.count()) {

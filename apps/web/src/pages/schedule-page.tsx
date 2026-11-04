@@ -31,12 +31,16 @@ export function SchedulePage() {
                 <li key={session.id}>
                   <Link
                     to={`/sessions/${session.id}`}
-                    className="block rounded-3xl border border-line bg-card p-5"
+                    className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-card px-4 py-3 hover:border-pine"
                   >
-                    <h2 className="font-serif text-2xl">{session.memberName}</h2>
-                    <p className="mt-1">{formatWhen(session.startAt, user.timezone)}</p>
-                    <p className="mt-1 text-sm text-mist">
-                      {sessionTiming(session.startAt, session.endAt)}
+                    <span>
+                      <h2 className="font-semibold">{session.memberName}</h2>
+                      <p className="mt-1 text-sm text-mist">
+                        {sessionTiming(session.startAt, session.endAt)}
+                      </p>
+                    </span>
+                    <p className="text-right text-sm font-medium">
+                      {formatWhen(session.startAt, user.timezone)}
                     </p>
                   </Link>
                 </li>

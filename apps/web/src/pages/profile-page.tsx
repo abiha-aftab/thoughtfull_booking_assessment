@@ -38,17 +38,17 @@ export function ProfilePage() {
         }}
       >
         {profile && user ? (
-          <div className="space-y-8">
-            <p>
-              <Link to="/" className="text-sm text-pine">
-                All professionals
-              </Link>
-            </p>
-            <p className="max-w-2xl text-lg">{profile.bio}</p>
-            <p className="text-sm text-mist">Works in {timezoneLabel(profile.timezone)}.</p>
+          <div className="space-y-5">
+            <Link to="/" className="text-sm font-medium text-pine">
+              All professionals
+            </Link>
+            <div className="rounded-2xl border border-line bg-card p-5">
+              <p className="max-w-2xl text-sm leading-6">{profile.bio}</p>
+              <p className="mt-3 text-sm text-mist">Works in {timezoneLabel(profile.timezone)}.</p>
+            </div>
             <section>
-              <h2 className="font-serif text-2xl">Open times</h2>
-              <p className="mt-2 mb-4 text-mist">The next 4 weeks.</p>
+              <h2 className="text-lg font-semibold">Open times</h2>
+              <p className="mt-1 mb-3 text-sm text-mist">The next 4 weeks.</p>
               <SlotPicker
                 slots={slots.data ?? []}
                 timeZone={user.timezone}

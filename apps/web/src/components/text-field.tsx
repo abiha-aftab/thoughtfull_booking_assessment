@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 const controlClass =
-  'mt-1 w-full rounded-lg border border-line bg-card px-3 py-2 text-ink outline-none';
+  'field mt-1.5 w-full rounded-xl px-3 py-2.5 text-ink outline-none placeholder:text-mist/70';
 
 type TextFieldProps = {
   label: string;

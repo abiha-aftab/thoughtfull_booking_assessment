@@ -102,43 +102,66 @@ npm run seed
 npm run test:e2e
 ```
 
-`npm test` runs the workspace unit and API tests. `npm run test:e2e` seeds the demo accounts, starts the API and the web app when they are not already running, and books a session in Chromium. The browser test needs MongoDB on `localhost:27017`. Install the browser once with `npx playwright install chromium`.
+`npm test` runs the workspace unit and API tests. `npm run seed` inserts the demo accounts when they are missing and leaves existing demo data unchanged. `npm run test:e2e` runs that seed, starts the API and the web app when they are not already running, and books a session in Chromium. The browser test needs MongoDB on `localhost:27017`. Install the browser once with `npx playwright install chromium`.
 
 ## Run locally
 
-Start MongoDB, the API, and the web app:
+Open `http://localhost:5173` after either path below. The API listens on `http://localhost:4000`. `GET http://localhost:4000/api/health` returns `200` when Mongoose is connected and `503` when it is not.
+
+The first start inserts the demo accounts when they are missing. Starting again leaves those accounts, their hours, sessions, and notifications as they are. Bookings you make stay in MongoDB.
+
+### Docker
+
+One command starts MongoDB, inserts the demo accounts when they are missing, and starts the API and the web app:
 
 ```bash
 docker compose up --build
-npm run seed
 ```
 
-Open `http://localhost:5173`. The API listens on `http://localhost:4000`. MongoDB is published on `localhost:27017`, and its data survives in the `mongo-data` volume. The web image is built to call `http://localhost:4000` from the browser.
+The web image is built to call `http://localhost:4000` from the browser. MongoDB is published on `localhost:27017`. Its data survives in the `mongo-data` volume, including after `docker compose down`. The next `docker compose up --build` sees the existing demo data and does not write over it. `docker compose down -v` deletes that volume, so the following start inserts the demo accounts again. Stop a foreground stack with Ctrl+C.
 
-To run the processes on the host instead, start only the database:
+### On the host
+
+Use this when you want the API and the web app running from the repository instead of the containers.
+
+Start the database:
 
 ```bash
 docker compose up mongo
+```
+
+In a second terminal, from the repository root:
+
+```bash
 cp .env.example .env
 cp apps/web/.env.example apps/web/.env
 npm install
 npm run seed
 npm run dev:api
+```
+
+In a third terminal:
+
+```bash
 npm run dev:web
 ```
 
-`GET http://localhost:4000/api/health` returns `200` when Mongoose is connected and `503` when it is not.
+`npm run seed` inserts the demo accounts when they are missing. Run it again after the database already has them and it leaves the existing rows unchanged. The same MongoDB volume is used here and in the Docker path above.
 
 ### Demo accounts
 
-`npm run seed` creates or resets these two fictional accounts. The password for both is `correct-horse`.
+The seed creates these two fictional accounts. The password for both is `correct-horse`.
 
 | Name       | Email                  | Role         | Timezone         |
 | ---------- | ---------------------- | ------------ | ---------------- |
 | Maya Chen  | maya.chen@example.com  | Member       | America/New_York |
 | Priya Shah | priya.shah@example.com | Professional | America/New_York |
 
-Priya's hours are 09:00–17:00 every day in that timezone, with no blocked dates. Other accounts in the database are left alone.
+Priya's hours start at 09:00–17:00 every day in that timezone, with no blocked dates. The seed also inserts 60 more fictional professionals, `directory.01@example.com` through `directory.60@example.com`, with the same password. Their hours are Monday–Friday 09:00–17:00. The directory lists 20 people per page, so Previous and Next appear. Accounts outside this seed are left alone.
+
+The header has a Light / Dark switch. The browser remembers the choice.
+
+The first seed also creates one upcoming session between Maya and Priya. Its 24-hour reminder is already due, so both accounts have an in-app notification. Open Notifications after signing in as either of them. The 1-hour reminder stays pending until an hour before the session. A later start does not create another copy of that session, and it does not reset hours, passwords, or reminders that are already stored.
 
 Signed-in requests use an httpOnly `session` cookie. The API never trusts a user id sent by the client.
 
@@ -175,4 +198,3 @@ Signed-in requests use an httpOnly `session` cookie. The API never trusts a user
 GitHub Actions runs format, lint, typecheck, unit tests, and the Playwright path on pushes and pull requests to `main`.
 
 Do not commit `.env`.
-
