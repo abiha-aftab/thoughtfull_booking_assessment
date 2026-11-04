@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "dev:api": "npm run dev -w @thoughtfull/api"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

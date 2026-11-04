@@ -13,6 +13,7 @@ export type { IsoWeekday, ReminderKind, Role, SessionStatus } from './constants'
 
 export type {
   ApiErrorBody,
+  ApiFieldIssue,
   AuthenticatedUser,
   AvailabilityInterval,
   MemberUser,

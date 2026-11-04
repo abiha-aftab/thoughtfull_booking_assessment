@@ -2,7 +2,7 @@
 
 Small booking product for the ThoughtFull engineering assessment. A member finds a professional, sees free 50-minute slots in the member's own timezone, and books a session. Both people receive in-app reminders.
 
-This repository is a TypeScript monorepo. This first step sets up the workspaces, shared booking rules, and the requirements. The API and the web application are not runnable yet.
+This repository is a TypeScript monorepo. The API serves a health check and connects to MongoDB through Mongoose. Sign-in, booking, and the web application are not built yet.
 
 ## Stack
 
@@ -25,11 +25,22 @@ npm run format:check
 npm test
 ```
 
+## Run the API
+
+MongoDB must be running locally. Copy the example environment file, then start the API:
+
+```bash
+cp .env.example .env
+npm run dev:api
+```
+
+`GET http://localhost:4000/api/health` returns `200` when Mongoose is connected and `503` when it is not.
+
 ## Layout
 
 - `apps/api` — HTTP API
 - `apps/web` — browser application
 - `packages/shared` — booking constants and API contract types
 
-Copy `.env.example` to `.env` when the API is added. Do not commit `.env`.
+Do not commit `.env`.
 

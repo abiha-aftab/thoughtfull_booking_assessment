@@ -1,9 +1,15 @@
 import type { IsoWeekday, ReminderKind, Role, SessionStatus } from './constants';
 
+export type ApiFieldIssue = {
+  path: string;
+  message: string;
+};
+
 export type ApiErrorBody = {
   error: {
     code: string;
     message: string;
+    issues?: ApiFieldIssue[];
   };
 };
 
