@@ -86,8 +86,8 @@ flowchart TD
 
 ## Prerequisites
 
-- Node.js 20 or newer
-- npm 11
+- Node.js 22.22.2 or newer (`.nvmrc` pins 22, the version the Dockerfiles use)
+- npm 10 or newer
 - Docker, if you want MongoDB, the API, and the web app started together
 
 ## Scripts
