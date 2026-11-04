@@ -2,16 +2,7 @@ import type { ApiErrorBody } from '@thoughtfull/shared';
 import type { ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
 import { AppError } from '../errors/app-error';
-
-function isDuplicateKeyError(error: unknown, depth = 0): boolean {
-  if (depth > 5 || typeof error !== 'object' || error === null) {
-    return false;
-  }
-  if ('code' in error && (error.code === 11000 || error.code === '11000')) {
-    return true;
-  }
-  return 'cause' in error && isDuplicateKeyError(error.cause, depth + 1);
-}
+import { isDuplicateKeyError } from '../errors/mongo';
 
 function httpErrorStatus(error: unknown): { status: number; type: string } | undefined {
   if (typeof error !== 'object' || error === null) {

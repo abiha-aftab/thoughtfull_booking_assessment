@@ -112,3 +112,13 @@ export function validate(schemas: RequestSchemas) {
     next();
   };
 }
+
+export function validatedBody<T>(res: Response, schema: z.ZodType<T>): T {
+  const value: unknown = res.locals.validated;
+  const body = isRecord(value) ? value.body : undefined;
+  const parsed = schema.safeParse(body);
+  if (!parsed.success) {
+    throw new AppError(500, 'internal_error', 'Request was not validated');
+  }
+  return parsed.data;
+}
