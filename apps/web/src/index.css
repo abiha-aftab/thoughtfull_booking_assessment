@@ -87,13 +87,6 @@ body {
 }
 
 button,
-input,
-textarea {
-  font: inherit;
-  color: inherit;
-}
-
-button,
 a {
   transition:
     background-color 180ms ease,
