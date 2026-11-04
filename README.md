@@ -2,7 +2,7 @@
 
 Small booking product for the ThoughtFull engineering assessment. A member finds a professional, sees free 50-minute slots in the member's own timezone, and books a session. Both people receive in-app reminders.
 
-This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, and free-slot calendars through Mongoose. Booking and the web application are not built yet.
+This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, booking, and in-app reminders through Mongoose. The web application is not built yet.
 
 ## Stack
 
@@ -60,6 +60,15 @@ Signed-in requests use an httpOnly `session` cookie. The API never trusts a user
 - `PUT /api/availability/me`
 - `POST /api/availability/me/blocked-dates`
 - `DELETE /api/availability/me/blocked-dates/:date`
+- `POST /api/sessions`
+- `GET /api/sessions?when=upcoming|past`
+- `GET /api/sessions/schedule`
+- `GET /api/sessions/:id`
+- `POST /api/sessions/:id/cancel`
+- `POST /api/sessions/:id/reschedule`
+- `GET /api/notifications`
+- `POST /api/notifications/:id/read`
+- `POST /api/notifications/read-all`
 
 ## Layout
 

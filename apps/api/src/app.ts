@@ -8,7 +8,9 @@ import { notFoundHandler } from './common/middleware/not-found';
 import { authRouter } from './modules/auth/auth.routes';
 import { availabilityRouter } from './modules/availability/availability.routes';
 import { healthRouter } from './modules/health/health.routes';
+import { notificationsRouter } from './modules/notifications/notification.routes';
 import { professionalsRouter } from './modules/professionals/professionals.routes';
+import { sessionsRouter } from './modules/sessions/session.routes';
 
 export function createApp() {
   const app = express();
@@ -30,6 +32,8 @@ export function createApp() {
   app.use('/api/auth', authRouter);
   app.use('/api/availability', availabilityRouter);
   app.use('/api/professionals', professionalsRouter);
+  app.use('/api/sessions', sessionsRouter);
+  app.use('/api/notifications', notificationsRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

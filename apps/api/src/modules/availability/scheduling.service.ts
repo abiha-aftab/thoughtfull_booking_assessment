@@ -8,6 +8,7 @@ import type {
 import { Types } from 'mongoose';
 import { AppError } from '../../common/errors/app-error';
 import { UserModel } from '../auth/user.model';
+import { SessionModel } from '../sessions/session.model';
 import { AvailabilityModel } from './availability.model';
 import { generateSlots } from './slot-generation';
 
@@ -192,14 +193,18 @@ export async function slotsForProfessional(input: {
 }): Promise<TimeSlot[]> {
   const professional = await requireProfessional(input.professionalId);
   const availability = await getAvailability(professional._id.toString());
+  const now = input.now ?? new Date();
+  const bookings = await SessionModel.find({
+    professionalId: professional._id,
+    status: 'booked',
+  }).select('startAt endAt');
   const slots = generateSlots({
     professionalTimezone: professional.timezone,
     viewerTimezone: input.viewerTimezone,
     intervals: availability.intervals,
     blockedDates: availability.blockedDates,
-    now: input.now ?? new Date(),
-    // Booked ranges arrive with the booking flow. Until then every generated slot is free.
-    occupied: [],
+    now,
+    occupied: bookings.map((booking) => ({ startAt: booking.startAt, endAt: booking.endAt })),
   });
   return slots.map((slot) => ({
     startAt: slot.startAt.toISOString(),

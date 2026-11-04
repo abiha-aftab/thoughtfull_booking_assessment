@@ -3,6 +3,7 @@ import { connectDb, disconnectDb } from './config/db';
 import { env } from './config/env';
 import { databaseFailureMessage } from './config/redact';
 import { createShutdown } from './config/shutdown';
+import { startReminderPoller } from './modules/notifications/delivery';
 
 const app = createApp();
 
@@ -14,6 +15,8 @@ try {
   process.exit(1);
 }
 
+const stopReminders = startReminderPoller();
+
 const server = app.listen(env.API_PORT, () => {
   console.log(`API listening on port ${env.API_PORT}`);
 });
@@ -21,6 +24,7 @@ const server = app.listen(env.API_PORT, () => {
 const shutdown = createShutdown({
   close: () =>
     new Promise<void>((resolve, reject) => {
+      stopReminders();
       server.close((error) => {
         if (error) {
           reject(error);
