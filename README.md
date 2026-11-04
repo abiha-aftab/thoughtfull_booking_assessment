@@ -4,6 +4,10 @@ Small booking product for the ThoughtFull engineering assessment. A member finds
 
 This repository is a TypeScript monorepo. The API stores accounts, availability, sessions, reminders, and notifications with Mongoose. The web app signs people in, then lets a member book a session and a professional publish hours.
 
+The interesting parts are the ones a calendar gets wrong easily: slots are built from wall-clock hours in the professional's timezone and shown in the member's, daylight-saving gaps are skipped, two people racing for the same start get one booking and one `409`, and each reminder becomes exactly one notification even if the poller is restarted mid-delivery.
+
+![Professional profile with the four-week calendar and open times](docs/screenshots/open-times-desktop.png)
+
 ## Architecture
 
 The browser never sees the session token. It calls the API with an httpOnly cookie. Both apps share booking constants and response types from `packages/shared`. Reminders live on the session document. A poller in the API process writes each one to `Notification` once.
@@ -78,6 +82,18 @@ flowchart TD
   schedule --> proCancel["Professional can cancel a booked session at any time"]
 ```
 
+## Screens
+
+All data in these captures comes from the seed: fictional people, `example.com` addresses.
+
+| Sign in                                                                   | Directory                                                                                 |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![Sign-in card](docs/screenshots/sign-in-desktop.png)                     | ![Professional directory, 61 seeded profiles](docs/screenshots/professionals-desktop.png) |
+| **Notifications**                                                         | **Professional schedule (light theme)**                                                   |
+| ![Delivered 24-hour reminder](docs/screenshots/notifications-desktop.png) | ![Upcoming sessions for Priya Shah](docs/screenshots/schedule-light-desktop.png)          |
+| **Working hours (light theme)**                                           | **Phone, 390 px**                                                                         |
+| ![Weekly hours editor](docs/screenshots/availability-light-desktop.png)   | ![Open times on a phone](docs/screenshots/open-times-mobile.png)                          |
+
 ## Stack
 
 - React, Vite, TypeScript, React Router, Tailwind CSS, TanStack Query, React Hook Form, and Zod
@@ -102,7 +118,7 @@ npm run seed
 npm run test:e2e
 ```
 
-`npm test` runs the workspace unit and API tests. `npm run seed` inserts the demo accounts when they are missing and leaves existing demo data unchanged. `npm run test:e2e` runs that seed, starts the API and the web app when they are not already running, and books a session in Chromium. The browser test needs MongoDB on `localhost:27017`. Install the browser once with `npx playwright install chromium`.
+`npm test` runs the workspace unit and API tests: 106 Vitest cases across 27 files. The API suites start a throwaway `mongod` through MongoDB Memory Server, so they need no running database. `npm run seed` inserts the demo accounts when they are missing and leaves existing demo data unchanged. `npm run test:e2e` runs that seed, starts the API and the web app when they are not already running, and books a session in Chromium. The browser test needs MongoDB on `localhost:27017`. Install the browser once with `npx playwright install chromium`.
 
 ## Run locally
 
@@ -118,7 +134,7 @@ One command starts MongoDB, inserts the demo accounts when they are missing, and
 docker compose up --build
 ```
 
-The web image is built to call `http://localhost:4000` from the browser. MongoDB is published on `localhost:27017`. Its data survives in the `mongo-data` volume, including after `docker compose down`. The next `docker compose up --build` sees the existing demo data and does not write over it. `docker compose down -v` deletes that volume, so the following start inserts the demo accounts again. Stop a foreground stack with Ctrl+C.
+The web image is built to call `http://localhost:4000` from the browser. Compose publishes ports 5173, 4000, and 27017, so stop anything else on them first. MongoDB is published on `localhost:27017`. Its data survives in the `mongo-data` volume, including after `docker compose down`. The next `docker compose up --build` sees the existing demo data and does not write over it. `docker compose down -v` deletes that volume, so the following start inserts the demo accounts again. Stop a foreground stack with Ctrl+C.
 
 ### On the host
 
@@ -186,6 +202,45 @@ Signed-in requests use an httpOnly `session` cookie. The API never trusts a user
 - `POST /api/notifications/:id/read`
 - `POST /api/notifications/read-all`
 
+### Example exchange
+
+Captured against `docker compose up --build` with the seeded data. Ids and times will differ on your machine.
+
+```http
+POST /api/auth/login
+{"email":"maya.chen@example.com","password":"correct-horse"}
+
+HTTP 200
+Set-Cookie: session=<token>; Path=/; Expires=Sun, 15 Nov 2026 17:06:05 GMT; HttpOnly; SameSite=Lax
+{"user":{"id":"6af0aa19b1acadccef982086","name":"Maya Chen","email":"maya.chen@example.com","role":"member","timezone":"America/New_York"}}
+```
+
+```http
+GET /api/professionals/6af0aa19b1acadccef982087/slots
+
+HTTP 200
+{"slots":[{"startAt":"2026-11-08T19:50:00.000Z","endAt":"2026-11-08T20:40:00.000Z"},
+          {"startAt":"2026-11-08T20:40:00.000Z","endAt":"2026-11-08T21:30:00.000Z"},
+          {"startAt":"2026-11-09T14:00:00.000Z","endAt":"2026-11-09T14:50:00.000Z"}, ...]}
+```
+
+```http
+POST /api/sessions
+{"professionalId":"6af0aa19b1acadccef982087","startAt":"2026-12-05T20:40:00.000Z"}
+
+HTTP 201
+{"session":{"id":"6af0abfd952af7114bfe0268","memberId":"6af0aa19b1acadccef982086","professionalId":"6af0aa19b1acadccef982087","memberName":"Maya Chen","professionalName":"Priya Shah","startAt":"2026-12-05T20:40:00.000Z","endAt":"2026-12-05T21:30:00.000Z","status":"booked"}}
+```
+
+Sending the same booking again:
+
+```http
+HTTP 409
+{"error":{"code":"slot_unavailable","message":"That time is not available"}}
+```
+
+Without the cookie, any signed-in route answers `401 {"error":{"code":"unauthenticated","message":"Sign in to continue"}}`.
+
 ## Layout
 
 - `apps/api` — HTTP API
@@ -194,7 +249,10 @@ Signed-in requests use an httpOnly `session` cookie. The API never trusts a user
 - `e2e` — Playwright booking path
 - `DECISIONS.md` — choices that are not fixed by the assessment
 - `AI_USAGE.md` — how the coding agent was used
-
-GitHub Actions runs format, lint, typecheck, unit tests, and the Playwright path on pushes and pull requests to `main`.
+- `docs/screenshots` — the captures above
 
 Do not commit `.env`.
+
+## License
+
+MIT. See `LICENSE`.

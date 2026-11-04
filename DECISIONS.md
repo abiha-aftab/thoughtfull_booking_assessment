@@ -20,7 +20,7 @@ The role is chosen at sign-up and does not change. The session is an opaque toke
 
 ## Reminders
 
-Booking plans a 24-hour reminder and a 1-hour reminder for each person when that fire time is still in the future. The plan is stored on the session. Delivery is an in-process poller every 15 seconds. It claims a reminder, writes one notification with a unique reminder id, and marks the reminder delivered. A second claim or a process restart does not create a second notification. Cancel drops pending reminders. Reschedule replaces them. A reminder that was already delivered stays delivered.
+Booking plans a 24-hour reminder and a 1-hour reminder for each person when that fire time is still in the future. The plan is stored on the session. Delivery is an in-process poller every 15 seconds. It claims a reminder, writes one notification with a unique reminder id, and marks the reminder delivered. A second claim or a process restart does not create a second notification. Cancel drops pending reminders. Reschedule replaces them. A reminder that was already delivered stays delivered. A reminder that is still pending when its session starts, for example because the API was down at its fire time, is cancelled instead of being sent late.
 
 ## Web
 
@@ -28,4 +28,4 @@ The browser calls the API with `credentials: 'include'`. JavaScript never reads 
 
 ## Checks
 
-API behavior is covered with Vitest and Supertest against MongoDB Memory Server. UI rules are covered with Testing Library. One Playwright test signs in as the seeded member, books the first open slot, checks that the slot is gone, and signs in as the professional to see that session. GitHub Actions runs format, lint, typecheck, unit tests, and that browser test.
+API behavior is covered with Vitest and Supertest against MongoDB Memory Server. UI rules are covered with Testing Library. One Playwright test signs in as the seeded member, books the first open slot, checks that the slot is gone, and signs in as the professional to see that session. `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run test:e2e` are the full set of checks.
