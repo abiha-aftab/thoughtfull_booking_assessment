@@ -1,0 +1,196 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-pine: var(--pine);
+  --color-pine-dark: var(--pine-dark);
+  --color-pine-soft: var(--pine-soft);
+  --color-line: var(--line);
+  --color-clay: var(--clay);
+  --color-clay-soft: var(--clay-soft);
+  --color-mist: var(--mist);
+  --color-hairline: var(--hairline);
+  --color-chip: var(--chip);
+  --color-chip-strong: var(--chip-strong);
+}
+
+:root {
+  color-scheme: dark;
+  --ink: #e7f2eb;
+  --paper: #0e1412;
+  --card: #17211d;
+  --pine: #3dcf9b;
+  --pine-dark: #2aa87c;
+  --pine-soft: #16352b;
+  --line: #2c3b34;
+  --clay: #f0b2a8;
+  --clay-soft: #3a2422;
+  --mist: #93a59b;
+  --hairline: rgb(255 255 255 / 0.1);
+  --chip: rgb(255 255 255 / 0.05);
+  --chip-strong: rgb(255 255 255 / 0.1);
+  --field-border: rgb(255 255 255 / 0.08);
+  --field-bg: rgb(255 255 255 / 0.04);
+  --field-bg-hover: rgb(255 255 255 / 0.06);
+  --field-bg-focus: rgb(255 255 255 / 0.07);
+  --field-shadow: inset 0 1px 2px rgb(0 0 0 / 0.25);
+  --field-glow: rgb(61 207 155 / 0.16);
+  --wash: rgb(61 207 155 / 0.16);
+  --wash-far: rgb(61 207 155 / 0.08);
+  --autofill: #141c19;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #17211d;
+  --paper: #f3f6f3;
+  --card: #ffffff;
+  --pine: #0e7a5f;
+  --pine-dark: #0b5c48;
+  --pine-soft: #e5f4ee;
+  --line: #d5e0d9;
+  --clay: #9a3b32;
+  --clay-soft: #f8ebe7;
+  --mist: #5c6b63;
+  --hairline: rgb(23 33 29 / 0.12);
+  --chip: rgb(23 33 29 / 0.04);
+  --chip-strong: rgb(23 33 29 / 0.08);
+  --field-border: rgb(23 33 29 / 0.12);
+  --field-bg: rgb(255 255 255 / 0.72);
+  --field-bg-hover: rgb(255 255 255 / 0.92);
+  --field-bg-focus: #ffffff;
+  --field-shadow: inset 0 1px 2px rgb(23 33 29 / 0.05);
+  --field-glow: rgb(14 122 95 / 0.18);
+  --wash: rgb(14 122 95 / 0.14);
+  --wash-far: rgb(14 122 95 / 0.07);
+  --autofill: #f4faf7;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background:
+    radial-gradient(900px 420px at 8% -10%, var(--wash), transparent 55%),
+    radial-gradient(700px 380px at 100% 0%, var(--wash-far), transparent 50%), var(--paper);
+  background-size:
+    140% 140%,
+    120% 120%,
+    auto;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  animation: drift 22s ease-in-out infinite;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button,
+a {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+a.rounded-2xl:hover {
+  transform: translateY(-2px);
+}
+
+:focus-visible {
+  outline: 2px solid var(--pine);
+  outline-offset: 2px;
+}
+
+.field {
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
+  box-shadow: var(--field-shadow);
+  color: var(--ink);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.field:hover {
+  border-color: var(--pine);
+  background: var(--field-bg-hover);
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--pine);
+  background: var(--field-bg-focus);
+  box-shadow:
+    var(--field-shadow),
+    0 0 0 4px var(--field-glow);
+}
+
+.field:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  box-shadow: inset 0 0 0 1000px var(--autofill);
+}
+
+.rise {
+  animation: rise 460ms ease both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    background-position:
+      0% 0%,
+      100% 0%,
+      0 0;
+  }
+
+  50% {
+    background-position:
+      12% 8%,
+      80% 12%,
+      0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .rise,
+  button,
+  a,
+  .field {
+    animation: none;
+    transition: none;
+  }
+
+  button:not(:disabled):active,
+  a.rounded-2xl:hover {
+    transform: none;
+  }
+}
