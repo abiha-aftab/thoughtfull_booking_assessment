@@ -17,7 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "dev:api": "npm run dev -w @thoughtfull/api"
+    "dev:api": "npm run dev -w @thoughtfull/api",
+    "dev:web": "npm run dev -w @thoughtfull/web"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

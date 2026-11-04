@@ -2,7 +2,7 @@
 
 Small booking product for the ThoughtFull engineering assessment. A member finds a professional, sees free 50-minute slots in the member's own timezone, and books a session. Both people receive in-app reminders.
 
-This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, booking, and in-app reminders through Mongoose. The web application is not built yet.
+This repository is a TypeScript monorepo. The API serves health checks, accounts, weekly availability, booking, and in-app reminders through Mongoose. The web app signs people in and shows the signed-in account. Booking screens are not built yet.
 
 ## Stack
 
@@ -46,6 +46,15 @@ npm run dev:api
 ```
 
 `GET http://localhost:4000/api/health` returns `200` when Mongoose is connected and `503` when it is not.
+
+Start the web app in another terminal:
+
+```bash
+cp apps/web/.env.example apps/web/.env
+npm run dev:web
+```
+
+Open `http://localhost:5173`. Sign-in uses the API at `http://localhost:4000` and stores the session in an httpOnly cookie.
 
 Signed-in requests use an httpOnly `session` cookie. The API never trusts a user id sent by the client.
 
