@@ -124,31 +124,47 @@ function partyRole(
   return undefined;
 }
 
-async function toDto(session: {
+type SessionRecord = {
   _id: { toString(): string };
   memberId: { toString(): string };
   professionalId: { toString(): string };
   startAt: Date;
   endAt: Date;
   status: string;
-}): Promise<SessionDto> {
-  if (session.status !== 'booked' && session.status !== 'cancelled') {
+};
+
+async function toDtos(sessions: readonly SessionRecord[]): Promise<SessionDto[]> {
+  if (sessions.length === 0) {
+    return [];
+  }
+  const userIds = new Set(
+    sessions.flatMap((session) => [session.memberId.toString(), session.professionalId.toString()]),
+  );
+  const users = await UserModel.find({ _id: { $in: [...userIds] } }).select('name');
+  const names = new Map(users.map((user) => [user._id.toString(), user.name]));
+  return sessions.map((session) => {
+    if (session.status !== 'booked' && session.status !== 'cancelled') {
+      throw new AppError(500, 'internal_error', 'Something went wrong');
+    }
+    return {
+      id: session._id.toString(),
+      memberId: session.memberId.toString(),
+      professionalId: session.professionalId.toString(),
+      memberName: names.get(session.memberId.toString()) ?? 'Member',
+      professionalName: names.get(session.professionalId.toString()) ?? 'Professional',
+      startAt: session.startAt.toISOString(),
+      endAt: session.endAt.toISOString(),
+      status: session.status,
+    };
+  });
+}
+
+async function toDto(session: SessionRecord): Promise<SessionDto> {
+  const [dto] = await toDtos([session]);
+  if (!dto) {
     throw new AppError(500, 'internal_error', 'Something went wrong');
   }
-  const users = await UserModel.find({
-    _id: { $in: [session.memberId.toString(), session.professionalId.toString()] },
-  }).select('name');
-  const names = new Map(users.map((user) => [user._id.toString(), user.name]));
-  return {
-    id: session._id.toString(),
-    memberId: session.memberId.toString(),
-    professionalId: session.professionalId.toString(),
-    memberName: names.get(session.memberId.toString()) ?? 'Member',
-    professionalName: names.get(session.professionalId.toString()) ?? 'Professional',
-    startAt: session.startAt.toISOString(),
-    endAt: session.endAt.toISOString(),
-    status: session.status,
-  };
+  return dto;
 }
 
 async function requireOpenSlot(input: {
@@ -164,6 +180,7 @@ async function requireOpenSlot(input: {
   const bookings = await SessionModel.find({
     professionalId: input.professionalId,
     status: 'booked',
+    endAt: { $gt: input.now },
     ...(input.excludeSessionId ? { _id: { $ne: input.excludeSessionId } } : {}),
   }).select('startAt endAt');
   const slot = generateSlots({
@@ -263,7 +280,7 @@ export async function listMemberSessions(
   const sessions = await SessionModel.find(filter).sort(
     when === 'upcoming' ? { startAt: 1 } : { startAt: -1 },
   );
-  return Promise.all(sessions.map((session) => toDto(session)));
+  return toDtos(sessions);
 }
 
 export async function listProfessionalSchedule(
@@ -275,7 +292,7 @@ export async function listProfessionalSchedule(
     status: 'booked',
     endAt: { $gt: now },
   }).sort({ startAt: 1 });
-  return Promise.all(sessions.map((session) => toDto(session)));
+  return toDtos(sessions);
 }
 
 export async function cancelSession(input: {

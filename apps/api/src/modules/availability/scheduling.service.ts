@@ -197,6 +197,7 @@ export async function slotsForProfessional(input: {
   const bookings = await SessionModel.find({
     professionalId: professional._id,
     status: 'booked',
+    endAt: { $gt: now },
   }).select('startAt endAt');
   const slots = generateSlots({
     professionalTimezone: professional.timezone,
