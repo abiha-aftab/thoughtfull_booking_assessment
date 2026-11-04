@@ -122,3 +122,21 @@ export function validatedBody<T>(res: Response, schema: z.ZodType<T>): T {
   }
   return parsed.data;
 }
+
+function validatedPart<T>(res: Response, key: 'query' | 'params', schema: z.ZodType<T>): T {
+  const value: unknown = res.locals.validated;
+  const part = isRecord(value) ? value[key] : undefined;
+  const parsed = schema.safeParse(part);
+  if (!parsed.success) {
+    throw new AppError(500, 'internal_error', 'Request was not validated');
+  }
+  return parsed.data;
+}
+
+export function validatedQuery<T>(res: Response, schema: z.ZodType<T>): T {
+  return validatedPart(res, 'query', schema);
+}
+
+export function validatedParams<T>(res: Response, schema: z.ZodType<T>): T {
+  return validatedPart(res, 'params', schema);
+}

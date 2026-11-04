@@ -1,4 +1,4 @@
-import type { AuthenticatedUser } from '@thoughtfull/shared';
+import type { AuthenticatedUser, Role } from '@thoughtfull/shared';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../common/errors/app-error';
 import { userForToken } from './auth.service';
@@ -54,4 +54,18 @@ export async function requireUser(req: Request, res: Response, next: NextFunctio
   }
   res.locals.authUser = user;
   next();
+}
+
+export function requireRole(role: Role, message: string) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const user = await userForToken(readSessionToken(req));
+    if (!user) {
+      throw new AppError(401, 'unauthenticated', 'Sign in to continue');
+    }
+    if (user.role !== role) {
+      throw new AppError(403, 'forbidden', message);
+    }
+    res.locals.authUser = user;
+    next();
+  };
 }

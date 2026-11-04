@@ -6,7 +6,9 @@ import { env } from './config/env';
 import { errorHandler } from './common/middleware/error-handler';
 import { notFoundHandler } from './common/middleware/not-found';
 import { authRouter } from './modules/auth/auth.routes';
+import { availabilityRouter } from './modules/availability/availability.routes';
 import { healthRouter } from './modules/health/health.routes';
+import { professionalsRouter } from './modules/professionals/professionals.routes';
 
 export function createApp() {
   const app = express();
@@ -26,6 +28,8 @@ export function createApp() {
   app.use(express.json({ limit: '100kb' }));
   app.use('/api/health', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/availability', availabilityRouter);
+  app.use('/api/professionals', professionalsRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
 
